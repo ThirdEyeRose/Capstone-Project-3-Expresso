@@ -30,6 +30,19 @@ employeeRouter.param('id', (req, res, next, id) => {
   });
 });
 
+employeeRouter.param('employeeId', (req, res, next, id) => {
+  db.get(`SELECT * FROM Employee WHERE id = ${id}`, (error, row) => {
+    if (error) {
+      res.status(400).send(error);
+    } else if (row === undefined) {
+      res.status(404).send('Employee not found!');
+    } else {
+      req.employeeId = id;
+      next();
+    }
+  });
+});
+
 employeeRouter.get('/', (req, res, next) => {
   db.all(`SELECT * FROM Employee WHERE is_current_employee = 1`, (error, rows) => {
     res.send({ employees: rows });
@@ -87,6 +100,12 @@ employeeRouter.delete('/:id', (req, res, next) => {
           });
       }
     });
+});
+
+employeeRouter.get('/:employeeId/timesheets', (req, res, next) => {
+  db.all(`SELECT * FROM Timesheet WHERE employee_id = ${req.employeeId}`, (error, rows) => {
+    res.send({ timesheets: rows });
+  });
 });
 
 module.exports = employeeRouter;
