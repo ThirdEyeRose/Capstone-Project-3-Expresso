@@ -4,6 +4,8 @@ const morgan = require('morgan');
 
 const app = express();
 
+const PORT = process.env.PORT || 4001;
+
 // Use the JSON body parsing utility on all routes
 app.use(bodyParser.json());
 
@@ -14,7 +16,7 @@ app.use(morgan('dev'));
 const employeeRouter = require('./employeeRouter.js');
 app.use('/api/employees', employeeRouter);
 
-const menuRouter = require('./menuRouter.js');
-app.use('/api/menus', menuRouter);
+//const menuRouter = require('./menuRouter.js');
+//app.use('/api/menus', menuRouter);
 
 module.exports = app;
