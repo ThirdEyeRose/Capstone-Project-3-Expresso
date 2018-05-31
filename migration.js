@@ -23,4 +23,11 @@ db.serialize( () => {
     employee_id INTEGER NOT NULL,
     FOREIGN KEY(employee_id) REFERENCES Employee(id)
   )`);
+
+  //Drop and Create Menu Table
+  db.run(`DROP TABLE IF EXISTS Menu`);
+  db.run(`CREATE TABLE Menu (
+    id INTEGER PRIMARY KEY,
+    title TEXT NOT NULL
+  )`);
 });
