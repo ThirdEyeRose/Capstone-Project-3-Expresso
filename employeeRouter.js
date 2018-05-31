@@ -77,4 +77,18 @@ employeeRouter.put('/:id', validateEmployeeInput, (req, res, next) => {
     });
 });
 
+employeeRouter.delete('/:id', (req, res, next) => {
+  db.run(`UPDATE Employee SET is_current_employee = 0 WHERE id = $id`, { $id: req.employee.id }, function (error) {
+      if (error) {
+        console.log(error);
+      } else {
+        db.get(`SELECT * FROM Employee
+          WHERE id = ${this.lastID}`, (error, row) => {
+            console.log(this.lastID);
+            res.send({ employee: row });
+          });
+      }
+    });
+});
+
 module.exports = employeeRouter;
