@@ -30,4 +30,16 @@ db.serialize( () => {
     id INTEGER PRIMARY KEY,
     title TEXT NOT NULL
   )`);
+
+  //Drop and Create MenuItem Table
+  db.run(`DROP TABLE IF EXISTS MenuItem`);
+  db.run(`CREATE TABLE MenuItem (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT,
+    inventory INTEGER NOT NULL,
+    price INTEGER NOT NULL,
+    menu_id INTEGER NOT NULL,
+    FOREIGN KEY(menu_id) REFERENCES Menu(id)
+  )`);
 });
