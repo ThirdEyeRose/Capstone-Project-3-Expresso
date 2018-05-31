@@ -1,10 +1,8 @@
 const express = require('express');
-const sqlite3 = require('sqlite3');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 
 const app = express();
-const db = new sqlite3.Database(process.env.TEST_DATABASE || './database.sqlite');
 
 // Use the JSON body parsing utility on all routes
 app.use(bodyParser.json());
