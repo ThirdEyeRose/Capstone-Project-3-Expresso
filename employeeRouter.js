@@ -69,8 +69,7 @@ employeeRouter.put('/:id', validateEmployeeInput, (req, res, next) => {
         console.log(error);
       } else {
         db.get(`SELECT * FROM Employee
-          WHERE id = ${this.lastID}`, (error, row) => {
-            console.log(this.lastID);
+          WHERE id = ${req.employee.id}`, (error, row) => {
             res.send({ employee: row });
           });
       }
@@ -83,8 +82,7 @@ employeeRouter.delete('/:id', (req, res, next) => {
         console.log(error);
       } else {
         db.get(`SELECT * FROM Employee
-          WHERE id = ${this.lastID}`, (error, row) => {
-            console.log(this.lastID);
+          WHERE id = ${req.employee.id}`, (error, row) => {
             res.send({ employee: row });
           });
       }
