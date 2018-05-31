@@ -12,7 +12,7 @@ function validateEmployeeInput(req, res, next) {
     !employee.wage) {
     res.status(400).send();
   } else {
-    req.employee = employee;
+    req.employeeInput = employee;
     next();
   }
 }
@@ -43,9 +43,9 @@ employeeRouter.get('/:id', (req, res, next) => {
 employeeRouter.post('/', validateEmployeeInput, (req, res, next) => {
   db.run(`INSERT INTO Employee (name, position, wage)
   VALUES ($name, $position, $wage)`, {
-    $name: req.employee.name,
-    $position: req.employee.position,
-    $wage: req.employee.wage
+    $name: req.employeeInput.name,
+    $position: req.employeeInput.position,
+    $wage: req.employeeInput.wage
   }, function (error) {
       if (error) {
         console.log(error);
@@ -53,6 +53,25 @@ employeeRouter.post('/', validateEmployeeInput, (req, res, next) => {
         db.get(`SELECT * FROM Employee
           WHERE id = ${this.lastID}`, (error, row) => {
             res.status(201).send({ employee: row });
+          });
+      }
+    });
+});
+
+employeeRouter.put('/:id', validateEmployeeInput, (req, res, next) => {
+  db.run(`UPDATE Employee SET (name, position, wage) = ($name, $position, $wage) WHERE id = $id`, {
+    $name: req.employeeInput.name,
+    $position: req.employeeInput.position,
+    $wage: req.employeeInput.wage,
+    $id: req.employee.id
+  }, function (error) {
+      if (error) {
+        console.log(error);
+      } else {
+        db.get(`SELECT * FROM Employee
+          WHERE id = ${this.lastID}`, (error, row) => {
+            console.log(this.lastID);
+            res.send({ employee: row });
           });
       }
     });
