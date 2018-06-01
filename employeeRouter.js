@@ -17,6 +17,19 @@ function validateEmployeeInput(req, res, next) {
   }
 }
 
+function validateTimesheetInput(req, res, next) {
+  let timesheet = req.body.timesheet;
+  if (timesheet === undefined ||
+    !timesheet.hours ||
+    !timesheet.rate ||
+    !timesheet.date ) {
+    res.status(400).send();
+  } else {
+    req.timesheetInput = timesheet;
+    next();
+  }
+}
+
 employeeRouter.param('id', (req, res, next, id) => {
   db.get(`SELECT * FROM Employee WHERE id = ${id}`, (error, row) => {
     if (error) {
@@ -105,6 +118,21 @@ employeeRouter.delete('/:id', (req, res, next) => {
 employeeRouter.get('/:employeeId/timesheets', (req, res, next) => {
   db.all(`SELECT * FROM Timesheet WHERE employee_id = ${req.employeeId}`, (error, rows) => {
     res.send({ timesheets: rows });
+  });
+});
+
+employeeRouter.post('/:employeeId/timesheets', validateTimesheetInput, (req, res, next) => {
+  db.run(`INSERT INTO Timesheet (hours, rate, date, employee_id)
+  VALUES ($hours, $rate, $date, employee_id)`, {
+    $hours: req.timesheetInput.hours,
+    $rate: req.timesheetInput.rate,
+    $date: req.timesheetInput.date,
+    $employee_id: req.employeeId
+  }, function (error) {
+    db.get(`SELECT * FROM Timesheet WHERE id = ${this.lastID}`, (error, row) => {
+      console.log(row);
+      res.status(201).send({ timesheet: row });
+    });
   });
 });
 
