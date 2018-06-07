@@ -169,7 +169,6 @@ employeeRouter.put('/:employeeId/timesheets/:timesheetId', validateTimesheetInpu
 });
 
 employeeRouter.delete('/:employeeId/timesheets/:timesheetId', (req, res, next) => {
-  console.log('Delete code running...');
   db.run(`DELETE FROM Timesheet WHERE id = ${req.timesheetId}`, error => {
     if (error) {
       console.log(error);

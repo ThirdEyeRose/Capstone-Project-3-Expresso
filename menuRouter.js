@@ -69,4 +69,25 @@ menuRouter.put('/:id', validateMenuInput, (req, res, next) => {
     });
 });
 
+menuRouter.delete('/:id', (req, res, next) => {
+  // Check if menu has menu items associated
+  db.get(`SELECT * FROM MenuItem WHERE menu_id = ${req.menu.id}`, (error, row) => {
+    if (error) {
+      console.log(error);
+    } else if (row === undefined) {
+      // if no, remove menu, return 204
+      db.run(`DELETE FROM Menu WHERE id = ${req.menu.id}`, error => {
+        if (error) {
+          console.log(error);
+        } else {
+          res.status(204).send();
+        }
+      });
+    } else {
+      // if yes, return 400
+      res.status(400).send('Menu contains items and cannot be deleted');
+    }
+  });
+});
+
 module.exports = menuRouter;
