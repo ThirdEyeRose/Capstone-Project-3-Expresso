@@ -56,6 +56,19 @@ employeeRouter.param('employeeId', (req, res, next, id) => {
   });
 });
 
+employeeRouter.param('timesheetId', (req, res, next, id) => {
+  db.get(`SELECT * FROM Timesheet WHERE id = ${id} AND employee_id = ${req.employeeId}`, (error, row) => {
+    if (error) {
+      res.status(400).send(error);
+    } else if (row === undefined) {
+      res.status(404).send('Timesheet not found!');
+    } else {
+      req.timesheetId = id;
+      next();
+    }
+  });
+});
+
 employeeRouter.get('/', (req, res, next) => {
   db.all(`SELECT * FROM Employee WHERE is_current_employee = 1`, (error, rows) => {
     res.send({ employees: rows });
@@ -136,9 +149,23 @@ employeeRouter.post('/:employeeId/timesheets', validateTimesheetInput, (req, res
   });
 });
 
-/* employeeRouter.put('/:employeeId/timesheets/:timesheetId', validateTimesheetInput, (req, res, next) => {
+employeeRouter.put('/:employeeId/timesheets/:timesheetId', validateTimesheetInput, (req, res, next) => {
   db.run(`UPDATE Timesheet SET (hours, rate, date) =
-    ($hours, $rate, $date) WHERE`)
-}); */
+    ($hours, $rate, $date) WHERE id = $id`, {
+      $hours: req.timesheetInput.hours,
+      $rate: req.timesheetInput.rate,
+      $date: req.timesheetInput.date,
+      $id: req.timesheetId
+    }, function (error) {
+        if (error) {
+          console.log(error);
+        } else {
+          db.get(`SELECT * FROM Timesheet
+            WHERE id = ${req.timesheetId}`, (error, row) => {
+              res.send({ timesheet: row });
+            });
+        }
+      });
+});
 
 module.exports = employeeRouter;
