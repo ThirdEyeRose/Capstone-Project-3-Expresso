@@ -52,7 +52,20 @@ menuRouter.param('menuId', (req, res, next, id) => {
       next();
     }
   });
-})
+});
+
+menuRouter.param('menuItemId', (req, res, next, id) => {
+  db.get(`SELECT * FROM MenuItem WHERE id = ${id}`, (error, row) => {
+    if (error) {
+      res.status(400).send(error);
+    } else if (row === undefined) {
+      res.status(404).send('Menu item not found!');
+    } else {
+      req.menuItemId = id;
+      next();
+    }
+  });
+});
 
 menuRouter.get('/', (req, res, next) => {
   db.all(`SELECT * FROM Menu`, (error, rows) => {
@@ -140,6 +153,26 @@ menuRouter.post('/:menuId/menu-items', validateMenuItemInput, (req, res, next) =
         db.get(`SELECT * FROM MenuItem
           WHERE id = ${this.lastID}`, (error, row) => {
             res.status(201).send({ menuItem: row });
+          });
+      }
+    });
+});
+
+menuRouter.put('/:menuId/menu-items/:menuItemId', validateMenuItemInput, (req, res, next) => {
+  db.run(`UPDATE MenuItem SET (name, description, inventory, price, menu_id) = ($name, $description, $inventory, $price, $menu_id) WHERE id = $id`, {
+    $name: req.menuItemInput.name,
+    $description: req.menuItemInput.description || '',
+    $inventory: req.menuItemInput.inventory,
+    $price: req.menuItemInput.price,
+    $menu_id: req.menuId,
+    $id: req.menuItemId
+  }, function (error) {
+      if (error) {
+        console.log(error);
+      } else {
+        db.get(`SELECT * FROM MenuItem
+          WHERE id = ${req.menuItemId}`, (error, row) => {
+            res.status(200).send({ menuItem: row });
           });
       }
     });
