@@ -53,4 +53,20 @@ menuRouter.post('/', validateMenuInput, (req, res, next) => {
     });
 });
 
+menuRouter.put('/:id', validateMenuInput, (req, res, next) => {
+  db.run(`UPDATE Menu SET title = $title WHERE id = $id`, {
+    $title: req.menuInput.title,
+    $id: req.menu.id
+  }, function (error) {
+      if (error) {
+        console.log(error);
+      } else {
+        db.get(`SELECT * FROM Menu
+          WHERE id = ${req.menu.id}`, (error, row) => {
+            res.status(200).send({ menu: row });
+          });
+      }
+    });
+});
+
 module.exports = menuRouter;
