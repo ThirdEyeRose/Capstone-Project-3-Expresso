@@ -143,7 +143,6 @@ employeeRouter.post('/:employeeId/timesheets', validateTimesheetInput, (req, res
     $employee_id: req.employeeId
   }, function (error) {
     db.get(`SELECT * FROM Timesheet WHERE id = ${this.lastID}`, (error, row) => {
-      console.log(row);
       res.status(201).send({ timesheet: row });
     });
   });
