@@ -16,7 +16,7 @@ app.use(morgan('dev'));
 const employeeRouter = require('./employeeRouter.js');
 app.use('/api/employees', employeeRouter);
 
-//const menuRouter = require('./menuRouter.js');
-//app.use('/api/menus', menuRouter);
+const menuRouter = require('./menuRouter.js');
+app.use('/api/menus', menuRouter);
 
 module.exports = app;
