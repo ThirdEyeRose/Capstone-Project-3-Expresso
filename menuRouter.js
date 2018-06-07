@@ -15,6 +15,19 @@ function validateMenuInput(req, res, next) {
   }
 }
 
+function validateMenuItemInput(req, res, next) {
+  let menuItem = req.body.menuItem;
+  if (menuItem === undefined ||
+    !menuItem.name ||
+    !menuItem.inventory ||
+    !menuItem.price) {
+    res.status(400).send();
+  } else {
+    req.menuItemInput = menuItem;
+    next();
+  }
+}
+
 menuRouter.param('id', (req, res, next, id) => {
   db.get(`SELECT * FROM Menu WHERE id = ${id}`, (error, row) => {
     if (error) {
@@ -111,6 +124,25 @@ menuRouter.get('/:menuId/menu-items', (req, res, next) => {
       res.send({ menuItems: rows });
     }
   });
+});
+
+menuRouter.post('/:menuId/menu-items', validateMenuItemInput, (req, res, next) => {
+  db.run(`INSERT INTO MenuItem (name, description, inventory, price, menu_id) VALUES ($name, $description, $inventory, $price, $menu_id)`, {
+    $name: req.menuItemInput.name,
+    $description: req.menuItemInput.description || '',
+    $inventory: req.menuItemInput.inventory,
+    $price: req.menuItemInput.price,
+    $menu_id: req.menuId
+  }, function (error) {
+      if (error) {
+        console.log(error);
+      } else {
+        db.get(`SELECT * FROM MenuItem
+          WHERE id = ${this.lastID}`, (error, row) => {
+            res.status(201).send({ menuItem: row });
+          });
+      }
+    });
 });
 
 module.exports = menuRouter;
