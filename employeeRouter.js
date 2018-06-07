@@ -123,7 +123,7 @@ employeeRouter.get('/:employeeId/timesheets', (req, res, next) => {
 
 employeeRouter.post('/:employeeId/timesheets', validateTimesheetInput, (req, res, next) => {
   db.run(`INSERT INTO Timesheet (hours, rate, date, employee_id)
-  VALUES ($hours, $rate, $date, employee_id)`, {
+  VALUES ($hours, $rate, $date, $employee_id)`, {
     $hours: req.timesheetInput.hours,
     $rate: req.timesheetInput.rate,
     $date: req.timesheetInput.date,
@@ -135,5 +135,10 @@ employeeRouter.post('/:employeeId/timesheets', validateTimesheetInput, (req, res
     });
   });
 });
+
+/* employeeRouter.put('/:employeeId/timesheets/:timesheetId', validateTimesheetInput, (req, res, next) => {
+  db.run(`UPDATE Timesheet SET (hours, rate, date) =
+    ($hours, $rate, $date) WHERE`)
+}); */
 
 module.exports = employeeRouter;
