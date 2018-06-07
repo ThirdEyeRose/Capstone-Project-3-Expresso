@@ -28,6 +28,19 @@ menuRouter.param('id', (req, res, next, id) => {
   });
 });
 
+menuRouter.param('menuId', (req, res, next, id) => {
+  db.get(`SELECT * FROM Menu WHERE id = ${id}`, (error, row) => {
+    if (error) {
+      res.status(400).send(error);
+    } else if (row === undefined) {
+      res.status(404).send('Menu not found!');
+    } else {
+      req.menuId = id;
+      next();
+    }
+  });
+})
+
 menuRouter.get('/', (req, res, next) => {
   db.all(`SELECT * FROM Menu`, (error, rows) => {
     res.send({ menus: rows });
@@ -86,6 +99,16 @@ menuRouter.delete('/:id', (req, res, next) => {
     } else {
       // if yes, return 400
       res.status(400).send('Menu contains items and cannot be deleted');
+    }
+  });
+});
+
+menuRouter.get('/:menuId/menu-items', (req, res, next) => {
+  db.all(`SELECT * FROM MenuItem WHERE menu_id = ${req.menuId}`, (error, rows) => {
+    if (error) {
+      console.log(error);
+    } else {
+      res.send({ menuItems: rows });
     }
   });
 });
