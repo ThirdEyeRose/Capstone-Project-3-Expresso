@@ -57,7 +57,7 @@ employeeRouter.param('employeeId', (req, res, next, id) => {
 });
 
 employeeRouter.param('timesheetId', (req, res, next, id) => {
-  db.get(`SELECT * FROM Timesheet WHERE id = ${id} AND employee_id = ${req.employeeId}`, (error, row) => {
+  db.get(`SELECT * FROM Timesheet WHERE id = ${id}`, (error, row) => {
     if (error) {
       res.status(400).send(error);
     } else if (row === undefined) {
@@ -166,6 +166,17 @@ employeeRouter.put('/:employeeId/timesheets/:timesheetId', validateTimesheetInpu
             });
         }
       });
+});
+
+employeeRouter.delete('/:employeeId/timesheets/:timesheetId', (req, res, next) => {
+  console.log('Delete code running...');
+  db.run(`DELETE FROM Timesheet WHERE id = ${req.timesheetId}`, error => {
+    if (error) {
+      console.log(error);
+    } else {
+      res.status(204).send();
+    }
+  });
 });
 
 module.exports = employeeRouter;
