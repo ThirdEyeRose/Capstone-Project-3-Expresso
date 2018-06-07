@@ -178,4 +178,14 @@ menuRouter.put('/:menuId/menu-items/:menuItemId', validateMenuItemInput, (req, r
     });
 });
 
+menuRouter.delete('/:menuId/menu-items/:menuItemId', (req, res, nex) => {
+  db.run(`DELETE FROM MenuItem WHERE id = ${req.menuItemId}`, error => {
+    if (error) {
+      console.log(error);
+    } else {
+      res.status(204).send();
+    }
+  });
+});
+
 module.exports = menuRouter;
